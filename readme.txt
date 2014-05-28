@@ -28,7 +28,47 @@ you will see live visitors stats.
 take a test by visiting any page of your website.
 
 
-N.B. Initial version display only live online visitors. we are updating
+
+<strong>How does this work ?</strong>
+
+When some visit your website the script on plugin will collect following data 
+
+*  	userid
+*  	event (visit, login, logout, published post, comments and etc.)
+*  	browser
+*  	platform(Operating system)
+*  	ip(IP Address)
+*  	city(By IP Address)
+*  	region(By IP Address)
+*  	country Name(By IP Address)
+*  	url_id(Which is visiting)
+*  	referer doamin
+*   referer_url
+*   screensize
+*   is unique visit
+*   page view landing count
+
+and store table 'kento_wp_stats' and 'kento_wp_stats_online'
+
+and display on admin for live visitors.
+
+
+
+N.B. Initial version display only live online visitors. we are updating and will display more stats about visitors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 == Screenshots ==
