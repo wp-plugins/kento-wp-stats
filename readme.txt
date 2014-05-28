@@ -31,7 +31,7 @@ take a test by visiting any page of your website.
 
 <strong>How does this work ?</strong>
 
-When some visit your website the script on plugin will collect following data 
+When someone visit your website the script on plugin will collect following data 
 
 *  	userid
 *  	event (visit, login, logout, published post, comments and etc.)
