@@ -1,7 +1,7 @@
 === Kento Wordpress Stats ===
 Contributors: kentothemes
 Donate link: http://kentothemes.com/donate/
-Tags:  Wordpress Stats
+Tags:  Wordpress Stats, live visitors, live Stats, web Stats, analytics, visitors count,
 Requires at least: 3.8
 Tested up to: 3.9.1
 Stable tag: 1.0
