@@ -3,7 +3,7 @@
 Plugin Name: Kento Wordpress Stats
 Plugin URI: http://kentothemes.com
 Description: 
-Version: 1.0
+Version: 1.1
 Author: KentoThemes
 Author URI: http://kentothemes.com
 License: GPLv2 or later
