@@ -17,6 +17,10 @@ see who is online by user id and where they come from and other important inform
 
 
 
+
+
+
+
 == Installation ==
 
 1. Install as regular WordPress plugin.
@@ -74,12 +78,17 @@ N.B. Initial version display only live online visitors. we are updating and will
 == Screenshots ==
 
 1. Total user online.
-
+2. Visit data.
 
 
 
 
 == Changelog ==
+
+= 1.1 =
+* Update admin settings.
+* Update Live Stats.
+* Update Visitors List Data.
 
 = 1.0 =
 * Initial release

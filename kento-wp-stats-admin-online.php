@@ -1,5 +1,5 @@
 <div class="wrap">
-
+<h2>Kento WP Stats - Live Stats</h2>
 <div class="kento-wp-stats-admin">
 <script>		
 	jQuery(document).ready(function()
@@ -16,13 +16,14 @@
 								jQuery(".onlinecount .count").html(data);
 							}
 						});	
-			}, 30000)
+			}, 5000)
 					});
 			
 </script>
 <div class="onlinecount">
-Total User Online<br />
-<span class="count"></span>
+
+<span class="count"></span><br />
+Total User Online
 </div>
 
 
@@ -41,7 +42,7 @@ Total User Online<br />
 								jQuery(".visitors").html(data);
 							}
 						});	
-			}, 30000)
+			}, 5000)
 					});
 			
 </script>
