@@ -311,8 +311,6 @@ function kento_wp_stats_logout()
 
 	$screensize = kento_wp_stats_get_screensize();
 
-
-
 	$userid = kento_wp_stats_getuser();
 
 	$url_id_array = kento_wp_stats_geturl_id();
@@ -322,7 +320,7 @@ function kento_wp_stats_logout()
 
 	$event = "logout";
 
-	$isunique = kento_wp_stats_get_unique();
+	$isunique = 'no';
 	$landing = '0'; //kento_wp_stats_landing() headers already sent problem
 	$knp_session_id = kento_wp_stats_session();
 	
