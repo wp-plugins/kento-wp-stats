@@ -241,7 +241,7 @@ function kento_wp_stats_login()
 	$event = "login";
 	
 	$isunique = kento_wp_stats_get_unique();
-	$landing = kento_wp_stats_landing();
+	$landing = '0'; //kento_wp_stats_landing() headers already sent problem
 	$knp_session_id = kento_wp_stats_session();
 	
 	
@@ -755,7 +755,7 @@ function kento_wp_stats_get_referer()
 					<script>
 						var exdate=new Date();
 						exdate.setDate(exdate.getDate() + 365);    
-						knp_landing = <?php echo $knp_landing; ?>;
+						knp_landing =<?php echo $knp_landing; ?>;
 						var c_value=knp_landing + "; expires="+exdate.toUTCString()+"; path=/";
 						document.cookie= 'knp_landing=' + c_value;
 					
