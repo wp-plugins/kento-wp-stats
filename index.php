@@ -232,14 +232,17 @@ function kento_wp_stats_login($user_login, $user)
 
 	$screensize = kento_wp_stats_get_screensize();
 
-	$userid = kento_wp_stats_getuser();
+
+	$userid = get_userdatabylogin($user_login );
+	$userid = $userid->ID;
+
 	$url_id_array = kento_wp_stats_geturl_id();
 	$url_id_array = explode(',',$url_id_array);
 	$url_id = $url_id_array['0'];
 	$url_term = $url_id_array['1'];
-	
+
 	$event = "login";
-	
+
 	$isunique = kento_wp_stats_get_unique();
 	$landing = '0'; //kento_wp_stats_landing() headers already sent problem
 	$knp_session_id = kento_wp_stats_session();
@@ -275,13 +278,89 @@ $count = $wpdb->num_rows;
 		{
 			$wpdb->query("UPDATE $table SET knp_time='$knp_datetime', url_id='$url_id', referer_doamin='$referer_doamin', referer_url='$referer_url' WHERE session_id='$knp_session_id'");
 		}
-
-
-					
+			
 	}
 
-//add_action('wp_login', 'kento_wp_stats_login', 10, 2);
+add_action('wp_login', 'kento_wp_stats_login', 10, 2);
 
+
+function kento_wp_stats_logout()
+	{
+	$knp_date = kento_wp_stats_get_date();
+	$knp_time = kento_wp_stats_get_time();
+	$knp_datetime = kento_wp_stats_get_datetime();	
+	$duration = $knp_datetime;
+	
+	$browser = new Browser_KNP();
+	$platform = $browser->getPlatform();
+	$browser = $browser->getBrowser();
+	
+	$ip = $_SERVER['REMOTE_ADDR'];
+	
+	
+	$geoplugin = new geoPlugin();
+	$geoplugin->locate();
+	$city = $geoplugin->city;
+	$region = $geoplugin->region;
+	$countryName = $geoplugin->countryCode;
+
+	$referer = kento_wp_stats_get_referer();
+	$referer = explode(',',$referer);
+	$referer_doamin = $referer['0'];
+	$referer_url = $referer['1'];
+
+	$screensize = kento_wp_stats_get_screensize();
+
+
+
+	$userid = kento_wp_stats_getuser();
+
+	$url_id_array = kento_wp_stats_geturl_id();
+	$url_id_array = explode(',',$url_id_array);
+	$url_id = $url_id_array['0'];
+	$url_term = $url_id_array['1'];
+
+	$event = "logout";
+
+	$isunique = kento_wp_stats_get_unique();
+	$landing = '0'; //kento_wp_stats_landing() headers already sent problem
+	$knp_session_id = kento_wp_stats_session();
+	
+	
+	global $wpdb;
+	$table = $wpdb->prefix . "kento_wp_stats";
+		
+	$wpdb->query( $wpdb->prepare("INSERT INTO $table 
+								( id, session_id, knp_date, knp_time, duration, userid, event, browser, platform, ip, city, region, countryName, url_id, url_term, referer_doamin, referer_url, screensize, isunique, landing )
+			VALUES	( %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s )",
+						array	( '', $knp_session_id, $knp_date, $knp_time, $duration, $userid, $event, $browser, $platform, $ip, $city, $region, $countryName, $url_id, $url_term, $referer_doamin, $referer_url, $screensize, $isunique, $landing )
+								));
+		
+		
+
+
+$table = $wpdb->prefix . "kento_wp_stats_online";	
+$result = $wpdb->get_results("SELECT * FROM $table WHERE session_id='$knp_session_id'", ARRAY_A);
+$count = $wpdb->num_rows;
+
+
+ 
+
+	if($count==NULL)
+		{
+	$wpdb->query( $wpdb->prepare("INSERT INTO $table 
+								( id, session_id, knp_time, userid, url_id, url_term, city, region, countryName, browser, platform, referer_doamin, referer_url) VALUES	(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+							array( '', $knp_session_id, $knp_datetime, $userid, $url_id, $url_term, $city, $region, $countryName, $browser, $platform, $referer_doamin, $referer_url)
+								));
+		}
+	else
+		{
+			$wpdb->query("UPDATE $table SET knp_time='$knp_datetime', url_id='$url_id', referer_doamin='$referer_doamin', referer_url='$referer_url' WHERE session_id='$knp_session_id'");
+		}
+			
+	}
+
+add_action('wp_logout', 'kento_wp_stats_logout');
 
 
 

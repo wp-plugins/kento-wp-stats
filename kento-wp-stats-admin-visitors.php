@@ -114,20 +114,32 @@ $entries = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}kento_wp_stats ORDE
                 ?>
                 </td>
                 <td><?php 				
-				$userid = $entry->userid;
-				if(is_numeric($userid))
-					{	
-						$user_info = get_userdata($userid);
+						$userid = $entry->userid;
+										
+						if(is_numeric($userid))
+							{
+								$user_info = get_userdata($userid);
+								echo "<span title='".$user_info->display_name."' class='avatar'>".get_avatar( $userid, 32 )."<i title='User'></i></span>";
+							}
+						else
+							{
+								if($userid=='guest')
+									{
+									echo "<span title='Guest' class='avatar'>".get_avatar( 0, 32 )."</span>";
+									}
+								else
+									{
+										$userid = get_userdatabylogin($userid );
+										$userid = $userid->ID;
+										$user_info = get_userdata($userid);
+										echo "<span title='".$user_info->display_name."' class='avatar'>".get_avatar( $userid, 32 )."<i title='Username'></i></span>";
+									}
+								
 
-						echo "<span title='".$user_info->display_name."' class='avatar'>".get_avatar( $userid, 32 )."<i title='User'></i></span>";
-					}
-				else
-					{
-						echo "<span title='Guest' class='avatar'>".get_avatar( 0, 32 )."</span>";
-					}
+							}	
 				
 				
-				
+
 				
 				
 				
