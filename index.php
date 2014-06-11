@@ -205,7 +205,7 @@ add_action('wp_head', 'kento_wp_stats_visit');
 
 
 
-function kento_wp_stats_login()
+function kento_wp_stats_login($user_login, $user)
 	{
 	$knp_date = kento_wp_stats_get_date();
 	$knp_time = kento_wp_stats_get_time();
@@ -280,7 +280,7 @@ $count = $wpdb->num_rows;
 					
 	}
 
-add_action('wp_login', 'kento_wp_stats_login');
+//add_action('wp_login', 'kento_wp_stats_login', 10, 2);
 
 
 
