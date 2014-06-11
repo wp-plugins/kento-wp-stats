@@ -108,7 +108,7 @@ $entries = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}kento_wp_stats ORDE
 					}
 				else
 					{
-						echo "<a href='".$url_id."'>".$url_term."</a>";
+						echo "<a href='http://".$url_id."'>".$url_term."</a>";
 					}
                 
                 ?>

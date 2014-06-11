@@ -41,15 +41,25 @@ register_uninstall_hook(__FILE__, 'kento_wp_stats_uninstall');
 function kento_wp_stats_uninstall()
 	{
 
+		$kento_wp_stats_delete_data = get_option( 'kento_wp_stats_delete_data' );
 		
 		
-		global $wpdb;
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}kento_wp_stats" );
-		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}kento_wp_stats_online" );
+		if($kento_wp_stats_delete_data=='yes')
+			{	
+		
+				global $wpdb;
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}kento_wp_stats" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}kento_wp_stats_online" );
+				
+				delete_option( 'kento_wp_stats_version' );
+				delete_option( 'kento_wp_stats_delete_data' );
+		
+			}
+		
+
 		
 		
-		delete_option( 'kento_wp_stats_version' );
-		delete_option( 'kento_wp_stats_delete_data' );
+
 		
 	}
 	
@@ -92,7 +102,7 @@ function kento_wp_stats_install()
                  ."( UNIQUE KEY id (id),
 					id int(100) NOT NULL AUTO_INCREMENT,
 					session_id VARCHAR( 255 ) NOT NULL,
-					knp_time TIME NOT NULL,
+					knp_time  DATETIME NOT NULL,
 					userid	VARCHAR( 50 )	NOT NULL,
 					url_id	VARCHAR( 255 )	NOT NULL,
 					url_term	VARCHAR( 255 )	NOT NULL,
@@ -115,7 +125,7 @@ function kento_wp_stats_install()
 
 
 
-function kento_wp_stats()
+function kento_wp_stats_visit()
 	{
 	$knp_date = kento_wp_stats_get_date();
 	$knp_time = kento_wp_stats_get_time();
@@ -178,19 +188,99 @@ $count = $wpdb->num_rows;
 		{
 	$wpdb->query( $wpdb->prepare("INSERT INTO $table 
 								( id, session_id, knp_time, userid, url_id, url_term, city, region, countryName, browser, platform, referer_doamin, referer_url) VALUES	(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-							array( '', $knp_session_id, $knp_time, $userid, $url_id, $url_term, $city, $region, $countryName, $browser, $platform, $referer_doamin, $referer_url)
+							array( '', $knp_session_id, $knp_datetime, $userid, $url_id, $url_term, $city, $region, $countryName, $browser, $platform, $referer_doamin, $referer_url)
 								));
 		}
 	else
 		{
-			$wpdb->query("UPDATE $table SET knp_time='$knp_time', url_id='$url_id', referer_doamin='$referer_doamin', referer_url='$referer_url' WHERE session_id='$knp_session_id'");
+			$wpdb->query("UPDATE $table SET knp_time='$knp_datetime', url_id='$url_id', referer_doamin='$referer_doamin', referer_url='$referer_url' WHERE session_id='$knp_session_id'");
 		}
 
 
 					
 	}
 
-add_action('wp_head', 'kento_wp_stats');
+add_action('wp_head', 'kento_wp_stats_visit');
+
+
+
+
+function kento_wp_stats_login()
+	{
+	$knp_date = kento_wp_stats_get_date();
+	$knp_time = kento_wp_stats_get_time();
+	$knp_datetime = kento_wp_stats_get_datetime();	
+	$duration = $knp_datetime;
+	
+	$browser = new Browser_KNP();
+	$platform = $browser->getPlatform();
+	$browser = $browser->getBrowser();
+	
+	$ip = $_SERVER['REMOTE_ADDR'];
+	
+	
+	$geoplugin = new geoPlugin();
+	$geoplugin->locate();
+	$city = $geoplugin->city;
+	$region = $geoplugin->region;
+	$countryName = $geoplugin->countryCode;
+
+	$referer = kento_wp_stats_get_referer();
+	$referer = explode(',',$referer);
+	$referer_doamin = $referer['0'];
+	$referer_url = $referer['1'];
+
+	$screensize = kento_wp_stats_get_screensize();
+
+	$userid = kento_wp_stats_getuser();
+	$url_id_array = kento_wp_stats_geturl_id();
+	$url_id_array = explode(',',$url_id_array);
+	$url_id = $url_id_array['0'];
+	$url_term = $url_id_array['1'];
+	
+	$event = "login";
+	
+	$isunique = kento_wp_stats_get_unique();
+	$landing = kento_wp_stats_landing();
+	$knp_session_id = kento_wp_stats_session();
+	
+	
+	global $wpdb;
+	$table = $wpdb->prefix . "kento_wp_stats";
+		
+	$wpdb->query( $wpdb->prepare("INSERT INTO $table 
+								( id, session_id, knp_date, knp_time, duration, userid, event, browser, platform, ip, city, region, countryName, url_id, url_term, referer_doamin, referer_url, screensize, isunique, landing )
+			VALUES	( %d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s )",
+						array	( '', $knp_session_id, $knp_date, $knp_time, $duration, $userid, $event, $browser, $platform, $ip, $city, $region, $countryName, $url_id, $url_term, $referer_doamin, $referer_url, $screensize, $isunique, $landing )
+								));
+		
+		
+
+
+$table = $wpdb->prefix . "kento_wp_stats_online";	
+$result = $wpdb->get_results("SELECT * FROM $table WHERE session_id='$knp_session_id'", ARRAY_A);
+$count = $wpdb->num_rows;
+
+
+ 
+
+	if($count==NULL)
+		{
+	$wpdb->query( $wpdb->prepare("INSERT INTO $table 
+								( id, session_id, knp_time, userid, url_id, url_term, city, region, countryName, browser, platform, referer_doamin, referer_url) VALUES	(%d, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+							array( '', $knp_session_id, $knp_datetime, $userid, $url_id, $url_term, $city, $region, $countryName, $browser, $platform, $referer_doamin, $referer_url)
+								));
+		}
+	else
+		{
+			$wpdb->query("UPDATE $table SET knp_time='$knp_datetime', url_id='$url_id', referer_doamin='$referer_doamin', referer_url='$referer_url' WHERE session_id='$knp_session_id'");
+		}
+
+
+					
+	}
+
+add_action('wp_login', 'kento_wp_stats_login');
 
 
 
@@ -219,7 +309,7 @@ function kento_wp_stats_ajax_online_total()
 		
 		echo $count_online;
 		
-		$time = date("H:i:s", strtotime(kento_wp_stats_get_datetime()." -120 seconds"));
+		$time = date("Y-m-d H:i:s", strtotime(kento_wp_stats_get_datetime()." -120 seconds"));
 		$wpdb->query("DELETE FROM $table WHERE knp_time < '$time' ");
 
 		die();
@@ -362,12 +452,16 @@ function kento_wp_stats_visitors_page()
 				
 				echo "<td>";
 				$knp_time = $entry->knp_time;
-				echo "<span class='time'>".$knp_time."</span>";
+				
+				
+				$time = date("H:i:s", strtotime($knp_time));
+				
+				echo "<span class='time'>".$time."</span>";
 				echo "</td>";				
 				
 				
 				echo "<td>";
-				$current_time = strtotime(kento_wp_stats_get_time());
+				$current_time = strtotime(kento_wp_stats_get_datetime());
 				$knp_time = strtotime($entry->knp_time);
 				$duration = ($current_time - $knp_time);
 
@@ -433,7 +527,7 @@ function kento_wp_stats_visitors_page()
 					}
 				else
 					{
-						echo "<span title='Referer Doamin'  class='referer_doamin'><a href='http://".$referer_doamin."'>Domain</a></span> - ";
+						echo "<span title='Referer Doamin'  class='referer_doamin'>".$referer_doamin."</span> - ";
 					}
 					
 					
@@ -446,7 +540,7 @@ function kento_wp_stats_visitors_page()
 					}
 				else
 					{
-						echo "<span title='Referer URL' class='referer_url'><a href='http://".$referer_url."'>URL</a></span>";
+						echo "<span title='Referer URL' class='referer_url'> <a href='http://".$referer_url."'>URL</a></span>";
 					}				
 
 				echo "</td>";				
