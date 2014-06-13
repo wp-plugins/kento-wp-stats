@@ -46,7 +46,7 @@ else
 
 
 $offset = ( $pagenum - 1 ) * $limit;
-$entries = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}kento_wp_stats ORDER BY knp_time 	 DESC LIMIT $offset, $limit" );
+$entries = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}kento_wp_stats ORDER BY id DESC LIMIT $offset, $limit" );
  
 
  
